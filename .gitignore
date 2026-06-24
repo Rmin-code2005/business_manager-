@@ -1,0 +1,109 @@
+# =========================
+# Python
+# =========================
+__pycache__
+.py[cod]
+$py.class
+
+# Virtual Environments
+venv
+env
+.venv
+
+# =========================
+# Django
+# =========================
+db.sqlite3
+.log
+media
+staticfiles
+
+# Django Migrations
+# اگر پروژه تیمی است این دو خط را کامنت نگه دار
+# migrations
+# !migrations__init__.py
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.
+!.env.example
+
+# =========================
+# IDEs
+# =========================
+
+# VS Code
+.vscode
+
+# PyCharm
+.idea
+
+# =========================
+# OS Files
+# =========================
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# =========================
+# Testing
+# =========================
+.coverage
+htmlcov
+.pytest_cache
+.tox
+.cache
+
+# =========================
+# Type Checkers
+# =========================
+.mypy_cache
+.pyre
+.ruff_cache
+
+# =========================
+# Build  Distribution
+# =========================
+build
+dist
+.egg-info
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+
+# =========================
+# PostgreSQL Dumps
+# =========================
+.sql
+.dump
+.bak
+
+# =========================
+# React  Frontend
+# =========================
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# React Build
+frontendbuild
+frontenddist
+
+# =========================
+# Celery
+# =========================
+celerybeat-schedule
+
+# =========================
+# Redis
+# =========================
+dump.rdb
