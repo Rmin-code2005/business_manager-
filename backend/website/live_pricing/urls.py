@@ -4,7 +4,9 @@ from .views import (
     all_currency_prices,
     symbol_currency_price,
     all_gold_prices,
-    symbol_gold_price
+    symbol_gold_price,
+    all_crypto_prices,
+    symbol_crypto_price
 )
 
 urlpatterns = [
@@ -27,5 +29,15 @@ urlpatterns = [
         'gold/prices/<str:symbol>/',
         symbol_gold_price,
         name = 'gold-symbol-price'
+    ),
+    path(
+        "crypto/prices/",
+        all_crypto_prices,
+        name="crypto-all-prices",
+    ),
+    path(
+        'crypto/prices/<str:symbol>/',
+        symbol_crypto_price,
+        name = 'crypto-symbol-price'
     )
 ]
