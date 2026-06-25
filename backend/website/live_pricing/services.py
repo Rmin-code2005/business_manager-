@@ -21,3 +21,23 @@ async def get_price_by_symbol(symbol: str):
         "symbol": symbol,
         "price": prices[symbol]
     }
+
+async def get_all_gold():
+    client = NerkhClient()
+    return await client.get("/v1/prices/json/gold")
+
+async def get_gold_by_symbol(symbol:str):
+    data = await get_all_gold()
+    prices = data["data"]["prices"]
+
+    symbol = symbol.upper()
+
+    if symbol not in prices:
+        raise NotFound(
+            detail=f"Currency '{symbol}' not found."
+        )
+
+    return {
+        "symbol": symbol,
+        "price": prices[symbol]
+    }
