@@ -3,10 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LogoutSerializer
-from .serializers import LoginSerializer
-
-
+from .serializers import LogoutSerializer , LoginSerializer , UserDetailSerializer , RegisterSerializer
+from rest_framework.generics import RetrieveAPIView , CreateAPIView
+from django.shortcuts import get_object_or_404
+from .models import CustomUser
+from rest_framework.permissions import IsAuthenticated
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
     
@@ -28,3 +29,13 @@ class LogoutView(APIView):
             {"detail": "Logged out successfully"},
             status=status.HTTP_200_OK
         )
+
+class UserDetailView(RetrieveAPIView):
+    serializer_class = UserDetailSerializer
+    permission_classes = [IsAuthenticated]
+    def get_object(self):
+        return self.request.user
+    
+class RegisterView(CreateAPIView):
+
+    serializer_class = RegisterSerializer
