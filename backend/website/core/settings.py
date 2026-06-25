@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'drf_spectacular',
-    'accounts'
+    'accounts',
+    'live_pricing'
 ]
 
 MIDDLEWARE = [
