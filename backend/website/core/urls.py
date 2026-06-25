@@ -44,4 +44,8 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path(
+        "api/" ,
+        include("live_pricing.urls")
+    )
 ]

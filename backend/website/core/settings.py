@@ -154,3 +154,6 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Personal Portfolio Management API",
     "VERSION": "1.0.0",
 }
+
+NERKH_BASE_URL = config("NERKH_BASE_URL")
+NERKH_ACCESS_TOKEN = config("NERKH_ACCESS_TOKEN")
