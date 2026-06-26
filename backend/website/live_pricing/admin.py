@@ -6,10 +6,18 @@ from .models import (
     GoldBasket,
     CryptoBasket,
 )
-
+from .filters import SoftDeleteFilter
+from .actions import (
+    soft_delete_baskets,
+    restore_baskets,
+    hard_delete_baskets,
+)
 
 @admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        # مهم‌ترین قسمت
+        return self.model.alive_objects.all()
     list_display = (
         "id",
         "start_price_T",
@@ -31,12 +39,16 @@ class PriceAdmin(admin.ModelAdmin):
         return False
 
 
+
+
 class BaseBasketAdmin(admin.ModelAdmin):
+
     list_display = (
         "id",
         "user",
         "name",
         "count",
+        "deleted",
         "start_price_t",
         "start_price_d",
     )
@@ -47,13 +59,8 @@ class BaseBasketAdmin(admin.ModelAdmin):
         "user__phone",
     )
 
-    list_filter = (
-        "name",
-    )
-
     ordering = (
-        "user",
-        "name",
+        "-id",
     )
 
     autocomplete_fields = (
@@ -64,18 +71,35 @@ class BaseBasketAdmin(admin.ModelAdmin):
         "price",
     )
 
+    list_filter = (
+        SoftDeleteFilter,
+        "name",
+    )
+
+    actions = (
+        soft_delete_baskets,
+        restore_baskets,
+        hard_delete_baskets,
+    )
+
+    def get_queryset(self, request):
+        # مهم‌ترین قسمت
+        return self.model.objects.select_related(
+            "user",
+            "price",
+        )
+
+    @admin.display(boolean=True, description="Deleted")
+    def deleted(self, obj):
+        return obj.is_deleted
+
     @admin.display(description="Start Price (T)")
     def start_price_t(self, obj):
-        if obj.price:
-            return obj.price.start_price_T
-        return "-"
+        return obj.price.start_price_T if obj.price else "-"
 
     @admin.display(description="Start Price ($)")
     def start_price_d(self, obj):
-        if obj.price:
-            return obj.price.start_price_D
-        return "-"
-
+        return obj.price.start_price_D if obj.price else "-"
 
 @admin.register(CashBasket)
 class CashBasketAdmin(BaseBasketAdmin):
