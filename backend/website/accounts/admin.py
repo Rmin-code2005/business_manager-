@@ -5,3 +5,9 @@ from .models import CustomUser
 class UserAdmin(admin.ModelAdmin):
     list_display = ['id' , 'email' ,'first_name' , 'last_name' , 'phone']
     list_display_links = [ 'id','email']
+    search_fields = (
+        "email",
+        "phone",
+        "first_name",
+        "last_name",
+    )

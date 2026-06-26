@@ -2,4 +2,8 @@ from django.apps import AppConfig
 
 
 class LivePricingConfig(AppConfig):
-    name = 'live_pricing'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "live_pricing"
+
+    def ready(self):
+        import live_pricing.signals

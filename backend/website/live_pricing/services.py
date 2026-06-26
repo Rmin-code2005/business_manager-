@@ -20,7 +20,7 @@ async def get_price_by_symbol(symbol: str):
 
     return {
         "symbol": symbol,
-        "price": prices[symbol]
+        "price": prices[symbol]['min']['1hour']
     }
 
 async def get_all_gold():
@@ -40,7 +40,7 @@ async def get_gold_by_symbol(symbol:str):
 
     return {
         "symbol": symbol,
-        "price": prices[symbol]
+        "price": prices[symbol]['min']['1hour']
     }
 async def get_all_crypto():
     client = NerkhClient()
@@ -58,5 +58,5 @@ async def get_crypto_by_symbol(symbol:str):
 
     return {
         "symbol": symbol,
-        "price": prices[symbol]
+        "price": prices[symbol]['min']['1hour']
     }
