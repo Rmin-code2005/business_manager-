@@ -118,3 +118,17 @@ export function logout() {
 export async function getMe() {
   return authRequest('/api/me/')
 }
+
+// ─── Prices endpoints ─────────────────────────────────────────────────────────
+
+export async function getCryptoPrices() {
+  return authRequest('/api/crypto/prices/')
+}
+
+export async function getCurrencyPrices() {
+  return authRequest('/api/currency/prices/')
+}
+
+export async function getGoldPrices() {
+  return authRequest('/api/gold/prices/')
+}

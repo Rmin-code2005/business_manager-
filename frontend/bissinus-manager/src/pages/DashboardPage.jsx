@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import PricesPanel from '../components/PricesPanel'
+import { getCryptoPrices, getCurrencyPrices, getGoldPrices } from '../api/auth'
 import styles from './DashboardPage.module.css'
 
 function IconLogout() {
@@ -19,16 +21,13 @@ export default function DashboardPage() {
   const [profileOpen, setProfileOpen] = useState(false)
   const dropdownRef = useRef(null)
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setProfileOpen(false)
       }
     }
-    if (profileOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
+    if (profileOpen) document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [profileOpen])
 
@@ -40,12 +39,11 @@ export default function DashboardPage() {
 
   const initials = [user?.first_name?.[0], user?.last_name?.[0]]
     .filter(Boolean).join('').toUpperCase() || '?'
-
   const fullName = [user?.first_name, user?.last_name].filter(Boolean).join(' ') || user?.email
 
   return (
     <div className={styles.shell}>
-      {/* ── Top nav ── */}
+      {/* ── Navbar ── */}
       <header className={styles.nav}>
         <div className={styles.navBrand}>
           <div className={styles.navLogo}>BM</div>
@@ -53,10 +51,7 @@ export default function DashboardPage() {
         </div>
 
         <div className={styles.userArea} ref={dropdownRef}>
-          <button
-            className={styles.userBtn}
-            onClick={() => setProfileOpen(o => !o)}
-          >
+          <button className={styles.userBtn} onClick={() => setProfileOpen(o => !o)}>
             <div className={styles.avatar}>{initials}</div>
             <div className={styles.userInfo}>
               <span className={styles.userName}>{fullName}</span>
@@ -79,23 +74,48 @@ export default function DashboardPage() {
               </div>
               <hr className={styles.dropdownDivider} />
               <button className={styles.logoutBtn} onClick={handleLogout}>
-                <IconLogout />
-                Sign out
+                <IconLogout /> Sign out
               </button>
             </div>
           )}
         </div>
       </header>
 
-      {/* ── Main content ── */}
+      {/* ── Main ── */}
       <main className={styles.main}>
         <div className={styles.welcome}>
           <h1 className={styles.welcomeTitle}>
-            Good day, <span className={styles.accent}>{user?.first_name || 'there'}</span> 👋
+            Welcome, <span className={styles.accent}>{user?.first_name || 'there'}</span> 👋
           </h1>
-          <p className={styles.welcomeSub}>Here's your profile information.</p>
+          <p className={styles.welcomeSub}>Live market prices</p>
         </div>
 
+        {/* ── 3 price panels ── */}
+        <div className={styles.pricesGrid}>
+          <PricesPanel
+            title="Currency"
+            icon="💵"
+            color="blue"
+            fetchFn={getCurrencyPrices}
+            unit="Toman"
+          />
+          <PricesPanel
+            title="Gold"
+            icon="🥇"
+            color="yellow"
+            fetchFn={getGoldPrices}
+            unit="Toman"
+          />
+          <PricesPanel
+            title="Crypto"
+            icon="₿"
+            color="green"
+            fetchFn={getCryptoPrices}
+            unit="Toman"
+          />
+        </div>
+
+        {/* ── Profile card ── */}
         <div className={styles.module}>
           <div className={styles.moduleHeader}>
             <span className={styles.moduleTitle}>Your Profile</span>
