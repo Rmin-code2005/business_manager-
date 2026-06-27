@@ -1,67 +1,90 @@
 from django.urls import path
 
 from .views import (
-    all_currency_prices,
-    symbol_currency_price,
-    all_gold_prices,
-    symbol_gold_price,
-    all_crypto_prices,
-    symbol_crypto_price,
-    symbolsView,
+    SymbolsView,
+
+    CurrencyPricesView,
+    CurrencyPriceView,
+
+    GoldPricesView,
+    GoldPriceView,
+
+    CryptoPricesView,
+    CryptoPriceView,
+
     AllUserCurrencyBaskets,
-    AllUserCuryptoBaskets,
-    AllUserGoldBaskets
+    AllUserGoldBaskets,
+    AllUserCryptoBaskets,
 )
 
 urlpatterns = [
+    # -------------------------
+    # Symbols
+    # -------------------------
+    path(
+        "symbols/",
+        SymbolsView.as_view(),
+        name="symbols",
+    ),
+
+    # -------------------------
+    # Currency
+    # -------------------------
     path(
         "currency/prices/",
-        all_currency_prices,
+        CurrencyPricesView.as_view(),
         name="currency-all-prices",
     ),
     path(
         "currency/prices/<str:symbol>/",
-        symbol_currency_price,
+        CurrencyPriceView.as_view(),
         name="currency-symbol-price",
     ),
+
+    # -------------------------
+    # Gold
+    # -------------------------
     path(
         "gold/prices/",
-        all_gold_prices,
+        GoldPricesView.as_view(),
         name="gold-all-prices",
     ),
     path(
-        'gold/prices/<str:symbol>/',
-        symbol_gold_price,
-        name = 'gold-symbol-price'
+        "gold/prices/<str:symbol>/",
+        GoldPriceView.as_view(),
+        name="gold-symbol-price",
     ),
+
+    # -------------------------
+    # Crypto
+    # -------------------------
     path(
         "crypto/prices/",
-        all_crypto_prices,
+        CryptoPricesView.as_view(),
         name="crypto-all-prices",
     ),
     path(
-        'crypto/prices/<str:symbol>/',
-        symbol_crypto_price,
-        name = 'crypto-symbol-price'
+        "crypto/prices/<str:symbol>/",
+        CryptoPriceView.as_view(),
+        name="crypto-symbol-price",
     ),
+
+    # -------------------------
+    # User Baskets
+    # -------------------------
     path(
-        'symbols/',
-        symbolsView,
-        name = 'symbols'
-    ),
-    path(
-        'User/currency-basket/',
+        "user/currency-basket/",
         AllUserCurrencyBaskets.as_view(),
-        name = 'currency-basket'
+        name="user-currency-basket",
     ),
     path(
-        'User/gold-basket/',
+        "user/gold-basket/",
         AllUserGoldBaskets.as_view(),
-        name = 'gold-basket'
+        name="user-gold-basket",
     ),
     path(
-        'User/crypto-basket/',
-        AllUserCuryptoBaskets.as_view(),
-        name = 'curypto-basket'
+        "user/crypto-basket/",
+        AllUserCryptoBaskets.as_view(),
+        name="user-crypto-basket",
     ),
 ]

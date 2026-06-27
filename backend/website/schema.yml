@@ -4,6 +4,114 @@ info:
   version: 1.0.0
   description: Personal Portfolio Management API
 paths:
+  /api/crypto/prices/:
+    get:
+      operationId: crypto_prices_retrieve
+      tags:
+      - crypto
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/crypto/prices/{symbol}/:
+    get:
+      operationId: crypto_prices_retrieve_2
+      parameters:
+      - in: path
+        name: symbol
+        schema:
+          type: string
+        required: true
+      tags:
+      - crypto
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/currency/prices/:
+    get:
+      operationId: currency_prices_retrieve
+      tags:
+      - currency
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/currency/prices/{symbol}/:
+    get:
+      operationId: currency_prices_retrieve_2
+      parameters:
+      - in: path
+        name: symbol
+        schema:
+          type: string
+        required: true
+      tags:
+      - currency
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/gold/prices/:
+    get:
+      operationId: gold_prices_retrieve
+      tags:
+      - gold
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/gold/prices/{symbol}/:
+    get:
+      operationId: gold_prices_retrieve_2
+      parameters:
+      - in: path
+        name: symbol
+        schema:
+          type: string
+        required: true
+      tags:
+      - gold
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/login/:
     post:
       operationId: login_create
@@ -44,6 +152,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserDetail'
+          description: ''
+  /api/register/:
+    post:
+      operationId: register_create
+      tags:
+      - register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
           description: ''
   /api/schema/:
     get:
@@ -191,6 +326,21 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/symbols/:
+    get:
+      operationId: symbols_retrieve
+      tags:
+      - symbols
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/token/:
     post:
       operationId: token_create
@@ -245,6 +395,54 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
+  /api/user/crypto-basket/:
+    get:
+      operationId: user_crypto_basket_list
+      tags:
+      - user
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GeneralCryptoBasket'
+          description: ''
+  /api/user/currency-basket/:
+    get:
+      operationId: user_currency_basket_list
+      tags:
+      - user
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GeneralCurrencyBasket'
+          description: ''
+  /api/user/gold-basket/:
+    get:
+      operationId: user_gold_basket_list
+      tags:
+      - user
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GeneralGoldBasket'
+          description: ''
 components:
   schemas:
     BlankEnum:
@@ -260,6 +458,30 @@ components:
         * `male` - Male
         * `female` - Female
         * `other` - Other
+    GeneralCryptoBasket:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 10
+      required:
+      - name
+    GeneralCurrencyBasket:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 10
+      required:
+      - name
+    GeneralGoldBasket:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 10
+      required:
+      - name
     Login:
       type: object
       properties:
@@ -275,6 +497,35 @@ components:
     NullEnum:
       enum:
       - null
+    Register:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 11
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        gender:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+      - phone
     TokenObtainPair:
       type: object
       properties:
