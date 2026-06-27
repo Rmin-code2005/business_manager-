@@ -6,17 +6,21 @@ from rest_framework import serializers
 
 
 class BaseBasketSerializer(serializers.ModelSerializer):
-    start_price_t = serializers.ReadOnlyField(source="price.start_price_T")
-    start_price_d = serializers.ReadOnlyField(source="price.start_price_D")
+    start_price_T = serializers.ReadOnlyField(source="price.start_price_T")
+    start_price_D = serializers.ReadOnlyField(source="price.start_price_D")
 
     class Meta:
         fields = (
             "name",
             "count",
-            "start_price_t",
-            "start_price_d",
+            "start_price_T",
+            "start_price_D",
         )
-        
+class BaseGeneralBasketSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            "name",
+        )
         
 class CurrencyBasketSerializer(BaseBasketSerializer):
     class Meta(BaseBasketSerializer.Meta):
@@ -29,4 +33,18 @@ class CryptoBasketSerializer(BaseBasketSerializer):
         
 class GoldBasketSerializer(BaseBasketSerializer):
     class Meta(BaseBasketSerializer.Meta):
+        model = GoldBasket
+        
+        
+class GeneralCurrencyBasketSerializer(BaseGeneralBasketSerializer):
+    class Meta(BaseGeneralBasketSerializer.Meta):
+        model = CashBasket 
+        
+        
+class GeneralCryptoBasketSerializer(BaseGeneralBasketSerializer):
+    class Meta(BaseGeneralBasketSerializer.Meta):
+        model = CryptoBasket
+        
+class GeneralGoldBasketSerializer(BaseGeneralBasketSerializer):
+    class Meta(BaseGeneralBasketSerializer.Meta):
         model = GoldBasket

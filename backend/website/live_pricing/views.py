@@ -4,11 +4,14 @@ from .services import get_all_currency_prices , get_price_by_symbol , get_all_go
 from rest_framework.permissions import IsAuthenticated
 from asgiref.sync import async_to_sync
 from rest_framework.views import APIView 
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import ListAPIView
 from .validator import GOLD_SYMBOLS , CRYPTO_SYMBOLS , CURRENCY_SYMBOLS
-
-
-
+from .models import CashBasket , CryptoBasket , GoldBasket
+from .serializers import (
+    GeneralCurrencyBasketSerializer,
+    GeneralCryptoBasketSerializer,
+    GeneralGoldBasketSerializer
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def all_currency_prices(request):
@@ -55,3 +58,22 @@ def symbolsView(request):
             "crypto": CRYPTO_SYMBOLS,
         }
     )
+
+class AllUserCurrencyBaskets(ListAPIView):
+
+    serializer_class = GeneralCurrencyBasketSerializer
+    def get_queryset(self):
+        return CashBasket.alive_objects.filter(user=self.request.user)
+    
+class AllUserCuryptoBaskets(ListAPIView):
+
+    serializer_class = GeneralCryptoBasketSerializer
+    def get_queryset(self):
+        return CryptoBasket.alive_objects.filter(user=self.request.user)
+    
+
+class AllUserGoldBaskets(ListAPIView):
+
+    serializer_class = GeneralGoldBasketSerializer
+    def get_queryset(self):
+        return GoldBasket.alive_objects.filter(user=self.request.user)

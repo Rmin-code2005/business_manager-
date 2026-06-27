@@ -7,7 +7,10 @@ from .views import (
     symbol_gold_price,
     all_crypto_prices,
     symbol_crypto_price,
-    symbolsView
+    symbolsView,
+    AllUserCurrencyBaskets,
+    AllUserCuryptoBaskets,
+    AllUserGoldBaskets
 )
 
 urlpatterns = [
@@ -45,5 +48,20 @@ urlpatterns = [
         'symbols/',
         symbolsView,
         name = 'symbols'
-    )
+    ),
+    path(
+        'User/currency-basket/',
+        AllUserCurrencyBaskets.as_view(),
+        name = 'currency-basket'
+    ),
+    path(
+        'User/gold-basket/',
+        AllUserGoldBaskets.as_view(),
+        name = 'gold-basket'
+    ),
+    path(
+        'User/crypto-basket/',
+        AllUserCuryptoBaskets.as_view(),
+        name = 'curypto-basket'
+    ),
 ]
