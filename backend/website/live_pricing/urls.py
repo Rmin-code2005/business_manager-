@@ -6,7 +6,8 @@ from .views import (
     all_gold_prices,
     symbol_gold_price,
     all_crypto_prices,
-    symbol_crypto_price
+    symbol_crypto_price,
+    symbolsView
 )
 
 urlpatterns = [
@@ -39,5 +40,10 @@ urlpatterns = [
         'crypto/prices/<str:symbol>/',
         symbol_crypto_price,
         name = 'crypto-symbol-price'
+    ),
+    path(
+        'symbols/',
+        symbolsView,
+        name = 'symbols'
     )
 ]
