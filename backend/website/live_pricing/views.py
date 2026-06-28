@@ -3,7 +3,7 @@ from asgiref.sync import async_to_sync
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView , RetrieveUpdateDestroyAPIView
 
 from drf_spectacular.utils import extend_schema
 
@@ -17,6 +17,9 @@ from .serializers import (
     CurrencyBasketSerializer,
     GoldBasketSerializer,
     CryptoBasketSerializer,
+    GeneralCryptoBasketSerializer,
+    GeneralCurrencyBasketSerializer,
+    GeneralGoldBasketSerializer
 )
 
 from .services import (
@@ -131,7 +134,7 @@ class CryptoPriceView(APIView):
 
 class AllUserCurrencyBaskets(ListAPIView):
   
-    serializer_class = CurrencyBasketSerializer
+    serializer_class = GeneralCurrencyBasketSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -145,7 +148,7 @@ class AllUserCurrencyBaskets(ListAPIView):
 
 class AllUserGoldBaskets(ListAPIView):
     
-    serializer_class = GoldBasketSerializer
+    serializer_class = GeneralGoldBasketSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -158,14 +161,27 @@ class AllUserGoldBaskets(ListAPIView):
 
 
 class AllUserCryptoBaskets(ListAPIView):
-    # تغییر سریالایزر به نسخه کامل جهت نمایش موجودی و محاسبات قیمت
-    serializer_class = CryptoBasketSerializer
+   
+    serializer_class = GeneralCryptoBasketSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # تغییر select_related به prefetch_related برای بهینه‌سازی رابطه یک‌به‌چند قیمت‌ها
         return (
             CryptoBasket.alive_objects
             .filter(user=self.request.user)
             .prefetch_related("prices")
         )
+class SpeceficCurrencyBasketView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CurrencyBasketSerializer
+    def get_object(self ):
+        return CashBasket.alive_objects.get(name = self.kwargs['symbol'])
+
+class SpeceficGoldBasketView(RetrieveUpdateDestroyAPIView):
+    serializer_class = GoldBasketSerializer
+    def get_object(self ):
+        return GoldBasket.alive_objects.get(name = self.kwargs['symbol'])
+    
+class SpeceficCryptoBasketView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CryptoBasketSerializer
+    def get_object(self ):
+        return CryptoBasket.alive_objects.get(name = self.kwargs['symbol'])
