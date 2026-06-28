@@ -3,7 +3,7 @@ from asgiref.sync import async_to_sync
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView , RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView , RetrieveAPIView
 
 from drf_spectacular.utils import extend_schema
 
@@ -171,17 +171,17 @@ class AllUserCryptoBaskets(ListAPIView):
             .filter(user=self.request.user)
             .prefetch_related("prices")
         )
-class SpeceficCurrencyBasketView(RetrieveUpdateDestroyAPIView):
+class SpeceficCurrencyBasketView(RetrieveAPIView):
     serializer_class = CurrencyBasketSerializer
     def get_object(self ):
         return CashBasket.alive_objects.get(name = self.kwargs['symbol'])
 
-class SpeceficGoldBasketView(RetrieveUpdateDestroyAPIView):
+class SpeceficGoldBasketView(RetrieveAPIView):
     serializer_class = GoldBasketSerializer
     def get_object(self ):
         return GoldBasket.alive_objects.get(name = self.kwargs['symbol'])
     
-class SpeceficCryptoBasketView(RetrieveUpdateDestroyAPIView):
+class SpeceficCryptoBasketView(RetrieveAPIView):
     serializer_class = CryptoBasketSerializer
     def get_object(self ):
         return CryptoBasket.alive_objects.get(name = self.kwargs['symbol'])
