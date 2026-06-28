@@ -18,7 +18,9 @@ from .views import (
     
     SpeceficCurrencyBasketView,
     SpeceficCryptoBasketView,
-    SpeceficGoldBasketView
+    SpeceficGoldBasketView,
+    IncreaseBasket,
+    DecreaseBasket,
 )
 
 urlpatterns = [
@@ -105,5 +107,15 @@ urlpatterns = [
         "user/crypto-basket/<str:symbol>",
         SpeceficCryptoBasketView.as_view(),
         name = 'specefic-crypto-basket'
+    ),
+    path(
+        "user/currency-basket/increase/",
+        IncreaseBasket.as_view(),
+        name = 'increase-currency-basket'
+    ),
+    path(
+        "user/currency-basket/decrease/",
+        DecreaseBasket.as_view(),
+        name = 'decrease-currency-basket'
     )
 ]

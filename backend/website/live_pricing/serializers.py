@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.db.models import Sum
 from .models import CashBasket, GoldBasket, CryptoBasket, Price
-
+from .validator import GOLD_SYMBOLS , CRYPTO_SYMBOLS , CURRENCY_SYMBOLS
 
 class PriceLogSerializer(serializers.ModelSerializer):
     class Meta:
@@ -75,3 +75,33 @@ class GeneralCryptoBasketSerializer(BaseGeneralBasketSerializer):
 class GeneralGoldBasketSerializer(BaseGeneralBasketSerializer):
     class Meta(BaseGeneralBasketSerializer.Meta):
         model = GoldBasket
+        
+class ChangeBasketValueSerializer(serializers.Serializer):
+    type = serializers.CharField()      # می تواند ca (نقد), cr (کریپتو) یا g (طلا) باشد
+    symbol = serializers.CharField()
+    value = serializers.DecimalField(max_digits=20, decimal_places=8)
+
+    def validate_type(self, value):
+        valid_types = ['ca', 'cr', 'g']
+        if value not in valid_types:
+            raise serializers.ValidationError(f"Type should be one of {valid_types}")
+        return value
+
+    def validate(self, attrs):
+        basket_type = attrs.get('type')
+        symbol = attrs.get('symbol')
+
+        if basket_type == 'ca' and symbol not in CURRENCY_SYMBOLS:
+            raise serializers.ValidationError({"symbol": f"'{symbol}' is not a valid currency symbol."})
+        
+        elif basket_type == 'cr' and symbol not in CRYPTO_SYMBOLS:
+            raise serializers.ValidationError({"symbol": f"'{symbol}' is not a valid crypto symbol."})
+        
+        elif basket_type == 'g' and symbol not in GOLD_SYMBOLS:
+            raise serializers.ValidationError({"symbol": f"'{symbol}' is not a valid gold symbol."})
+
+        # بررسی اینکه مقدار تراکنش حتما مثبت باشد
+        if attrs.get('value') <= 0:
+            raise serializers.ValidationError({"value": "Value must be greater than zero."})
+
+        return attrs
