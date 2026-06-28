@@ -72,6 +72,10 @@ def remember_old_state(sender, instance, **kwargs):
 # Post Save (ثبت تراکنش قیمت‌ها)
 # -----------------------------
 
+# -----------------------------
+# Post Save (ثبت تراکنش قیمت‌ها و حذف خودکار بسکت‌های خالی)
+# -----------------------------
+
 @receiver(post_save, sender=CashBasket)
 @receiver(post_save, sender=GoldBasket)
 @receiver(post_save, sender=CryptoBasket)
@@ -80,9 +84,12 @@ def price_signal(sender, instance, created, **kwargs):
     if created:
         if instance.count > 0:
             record_price_change(instance, Decimal(str(instance.count)))
+        elif instance.count <= 0:
+            # اگر بسکتی با موجودی صفر یا کمتر ساخته شد، بلافاصله سافت دیلیت شود
+            instance.delete()
         return
 
-    # ۲. سافت دیلیت شدن بسکت
+    # ۲. سافت دیلیت شدن بسکت (جلوگیری از حلقه بی‌نهایت هنگام حذف)
     if instance.is_deleted and not instance._old_is_deleted:
         instance.prices.all().delete()
         return
@@ -93,12 +100,23 @@ def price_signal(sender, instance, created, **kwargs):
             p.restore()
         return
 
-    # اگر بسکت کلا حذف شده باشد، تغییرات بعدی نادیده گرفته می‌شود
+    # اگر بسکت از قبل حذف شده باشد، تغییرات بعدی نادیده گرفته می‌شود
     if instance.is_deleted:
         return
 
-    # ۴. تغییر مقدار عددی موجودی بسکت (کم یا زیاد شدن)
+    # ۴. بررسی رسیدن دارایی به صفر یا کمتر
     new_count = Decimal(str(instance.count))
+    if new_count <= 0:
+        # ثبت آخرین تغییر تراکنش قبل از حذف (کم شدن باقی‌مانده موجودی تا صفر)
+        if instance._old_count > 0:
+            delta = Decimal("0") - instance._old_count
+            record_price_change(instance, delta)
+        
+        # حذف (سافت دیلیت) خودکار بسکت
+        instance.delete()
+        return
+
+    # ۵. تغییر معمولی مقدار عددی موجودی بسکت (کم یا زیاد شدن عادی)
     if new_count != instance._old_count:
         delta = new_count - instance._old_count
         record_price_change(instance, delta)

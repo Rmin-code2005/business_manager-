@@ -14,9 +14,9 @@ from .models import (
 )
 
 from .serializers import (
-    GeneralCurrencyBasketSerializer,
-    GeneralGoldBasketSerializer,
-    GeneralCryptoBasketSerializer,
+    CurrencyBasketSerializer,
+    GoldBasketSerializer,
+    CryptoBasketSerializer,
 )
 
 from .services import (
@@ -130,36 +130,42 @@ class CryptoPriceView(APIView):
 # =========================
 
 class AllUserCurrencyBaskets(ListAPIView):
-    serializer_class = GeneralCurrencyBasketSerializer
+  
+    serializer_class = CurrencyBasketSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+       
         return (
             CashBasket.alive_objects
             .filter(user=self.request.user)
-            .select_related("price")
+            .prefetch_related("prices")
         )
 
 
 class AllUserGoldBaskets(ListAPIView):
-    serializer_class = GeneralGoldBasketSerializer
+    
+    serializer_class = GoldBasketSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        
         return (
             GoldBasket.alive_objects
             .filter(user=self.request.user)
-            .select_related("price")
+            .prefetch_related("prices")
         )
 
 
 class AllUserCryptoBaskets(ListAPIView):
-    serializer_class = GeneralCryptoBasketSerializer
+    # تغییر سریالایزر به نسخه کامل جهت نمایش موجودی و محاسبات قیمت
+    serializer_class = CryptoBasketSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        # تغییر select_related به prefetch_related برای بهینه‌سازی رابطه یک‌به‌چند قیمت‌ها
         return (
             CryptoBasket.alive_objects
             .filter(user=self.request.user)
-            .select_related("price")
+            .prefetch_related("prices")
         )
