@@ -1,113 +1,104 @@
 from decimal import Decimal
-
 from asgiref.sync import async_to_sync
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
-from live_pricing.services import get_price_by_symbol
+# فرض شده که این سرویس‌ها متد واکشی قیمت دارایی‌ها هستند
+from live_pricing.services import get_price_by_symbol 
 
 from .models import CashBasket, GoldBasket, CryptoBasket, Price
 
 
-# -----------------------------
-# Price Helpers
-# -----------------------------
-
-def create_price(instance):
-    asset_price = async_to_sync(get_price_by_symbol)(instance.name)
-    usd_price = async_to_sync(get_price_by_symbol)("USD")
-
-    price = Price.objects.create(
-        start_price_T=Decimal(asset_price["price"]) * Decimal(instance.count),
-        start_price_D=(
-            Decimal(asset_price["price"]) * Decimal(instance.count)
-            / Decimal(usd_price["price"])
-        ),
-    )
-
-    type(instance).objects.filter(pk=instance.pk).update(price=price)
-    instance.price = price
-
-
-def update_price(instance):
-    delta = Decimal(instance.count) - instance._old_count
-
-    if delta == 0:
+def record_price_change(instance, delta_count):
+    """
+    محاسبه قیمت لحظه‌ای بر اساس مقدار تغییر یافته و ثبت در جدول قیمت‌ها
+    """
+    if delta_count == 0:
         return
 
-    asset_price = async_to_sync(get_price_by_symbol)(instance.name)
-    usd_price = async_to_sync(get_price_by_symbol)("USD")
+    # گرفتن قیمت لحظه‌ای دارایی و دلار از سرویس زنده
+    asset_price_data = async_to_sync(get_price_by_symbol)(instance.name)
+    usd_price_data = async_to_sync(get_price_by_symbol)("USD")
 
-    instance.price.start_price_T += Decimal(asset_price["price"]) * delta
-    instance.price.start_price_D += (
-        Decimal(asset_price["price"]) * delta
-        / Decimal(usd_price["price"])
-    )
+    asset_unit_price = Decimal(str(asset_price_data["price"]))
+    usd_unit_price = Decimal(str(usd_price_data["price"]))
 
-    instance.price.save(
-        update_fields=["start_price_T", "start_price_D"]
-    )
+    # محاسبه ارزش تومانی و دلاریِ این مقدارِ تغییر یافته
+    amount_in_T = asset_unit_price * delta_count
+    amount_in_D = amount_in_T / usd_unit_price
+
+    # تشخیص نوع بسکت برای پر کردن کلید خارجی مناسب
+    price_kwargs = {
+        "count": delta_count,
+        "start_price_T": amount_in_T,
+        "start_price_D": amount_in_D,
+    }
+
+    if isinstance(instance, CashBasket):
+        price_kwargs["cash_basket"] = instance
+    elif isinstance(instance, GoldBasket):
+        price_kwargs["gold_basket"] = instance
+    elif isinstance(instance, CryptoBasket):
+        price_kwargs["crypto_basket"] = instance
+
+    # ایجاد یک رکورد جدید در جدول قیمت‌ها به عنوان تاریخچه این تغییر
+    Price.objects.create(**price_kwargs)
 
 
 # -----------------------------
-# Pre Save (track old state)
+# Pre Save (ذخیره وضعیت قبلی برای مقایسه تغییرات)
 # -----------------------------
 
 @receiver(pre_save, sender=CashBasket)
 @receiver(pre_save, sender=GoldBasket)
 @receiver(pre_save, sender=CryptoBasket)
 def remember_old_state(sender, instance, **kwargs):
-
     if not instance.pk:
         instance._old_count = Decimal("0")
         instance._old_is_deleted = False
         return
 
     old = sender.objects.filter(pk=instance.pk).first()
-
     if old is None:
         instance._old_count = Decimal("0")
         instance._old_is_deleted = False
         return
 
-    instance._old_count = Decimal(old.count)
+    instance._old_count = Decimal(str(old.count))
     instance._old_is_deleted = old.is_deleted
 
 
 # -----------------------------
-# Post Save (main logic)
+# Post Save (ثبت تراکنش قیمت‌ها)
 # -----------------------------
 
 @receiver(post_save, sender=CashBasket)
 @receiver(post_save, sender=GoldBasket)
 @receiver(post_save, sender=CryptoBasket)
 def price_signal(sender, instance, created, **kwargs):
-
-    # 1. CREATE
+    # ۱. زمان ساخت بسکت جدید
     if created:
-        create_price(instance)
+        if instance.count > 0:
+            record_price_change(instance, Decimal(str(instance.count)))
         return
 
-    # 2. SOFT DELETE
+    # ۲. سافت دیلیت شدن بسکت
     if instance.is_deleted and not instance._old_is_deleted:
-        if instance.price:
-            instance.price.delete()
+        instance.prices.all().delete()
         return
 
-    # 3. RESTORE
+    # ۳. ریسیت و بازگردانی بسکت
     if not instance.is_deleted and instance._old_is_deleted:
-        if instance.price and instance.price.is_deleted:
-            instance.price.restore()
+        for p in instance.prices.all():
+            p.restore()
         return
 
-    # 4. ignore deleted objects
+    # اگر بسکت کلا حذف شده باشد، تغییرات بعدی نادیده گرفته می‌شود
     if instance.is_deleted:
         return
 
-    # 5. price missing safety
-    if instance.price_id is None:
-        return
-
-    # 6. COUNT UPDATE
-    if Decimal(instance.count) != instance._old_count:
-        update_price(instance)
+    # ۴. تغییر مقدار عددی موجودی بسکت (کم یا زیاد شدن)
+    new_count = Decimal(str(instance.count))
+    if new_count != instance._old_count:
+        delta = new_count - instance._old_count
+        record_price_change(instance, delta)
