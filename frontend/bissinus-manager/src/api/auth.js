@@ -132,3 +132,31 @@ export async function getCurrencyPrices() {
 export async function getGoldPrices() {
   return authRequest('/api/gold/prices/')
 }
+
+// ─── Basket list endpoints ────────────────────────────────────────────────────
+
+export async function getCryptoBaskets() {
+  return authRequest('/api/user/crypto-basket/')
+}
+
+export async function getCurrencyBaskets() {
+  return authRequest('/api/user/currency-basket/')
+}
+
+export async function getGoldBaskets() {
+  return authRequest('/api/user/gold-basket/')
+}
+
+// ─── Basket detail endpoints ──────────────────────────────────────────────────
+
+export async function getCryptoBasketDetail(symbol) {
+  return authRequest(`/api/user/crypto-basket/${symbol}`)
+}
+
+export async function getCurrencyBasketDetail(symbol) {
+  return authRequest(`/api/user/currency-basket/${symbol}`)
+}
+
+export async function getGoldBasketDetail(symbol) {
+  return authRequest(`/api/user/gold-basket/${symbol}`)
+}

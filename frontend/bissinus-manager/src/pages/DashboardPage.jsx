@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import PricesPanel from '../components/PricesPanel'
+import BasketsSection from '../components/BasketsSection'
 import { getCryptoPrices, getCurrencyPrices, getGoldPrices } from '../api/auth'
 import styles from './DashboardPage.module.css'
 
@@ -114,6 +115,9 @@ export default function DashboardPage() {
             unit="Toman"
           />
         </div>
+
+        {/* ── Baskets ── */}
+        <BasketsSection />
 
         {/* ── Profile card ── */}
         <div className={styles.module}>
