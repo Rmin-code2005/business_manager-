@@ -7,7 +7,8 @@ from .views import UserDetailView
 from .views import (
     LoginView,
     RegisterView,
-    UserTelegramUsernameUpdateView
+    UserTelegramUsernameUpdateView,
+    is_member
 )
 urlpatterns = [
     path(
@@ -39,4 +40,9 @@ urlpatterns = [
         UserTelegramUsernameUpdateView.as_view(),
         name="update-telegram-username",
     ),
+    path(
+        "user/telegram/is-member/<str:username>",
+        is_member,
+        name = 'is-telegram-member'
+    )
 ]

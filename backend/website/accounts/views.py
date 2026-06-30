@@ -8,6 +8,7 @@ from rest_framework.generics import RetrieveAPIView , CreateAPIView , UpdateAPIV
 from django.shortcuts import get_object_or_404
 from .models import CustomUser
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
     
@@ -46,3 +47,11 @@ class UserTelegramUsernameUpdateView(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
+    
+@api_view(["GET"])
+def is_member(request, username):
+    return Response({
+        "is_member": CustomUser.objects.filter(
+            telegram_username=username
+        ).exists()
+    })

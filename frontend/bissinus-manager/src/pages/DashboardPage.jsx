@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import PricesPanel from '../components/PricesPanel'
 import BasketsSection from '../components/BasketsSection'
+import TelegramUsernameRow from '../components/TelegramUsernameRow'
 import { getCryptoPrices, getCurrencyPrices, getGoldPrices } from '../api/auth'
 import styles from './DashboardPage.module.css'
 
@@ -17,7 +18,7 @@ function IconLogout() {
 }
 
 export default function DashboardPage() {
-  const { user, onLogout } = useAuth()
+  const { user, onLogout, refreshUser } = useAuth()
   const navigate = useNavigate()
   const [profileOpen, setProfileOpen] = useState(false)
   const dropdownRef = useRef(null)
@@ -130,6 +131,10 @@ export default function DashboardPage() {
             <ProfileRow label="Email"      value={user?.email} />
             <ProfileRow label="Phone"      value={user?.phone} />
             <ProfileRow label="Gender"     value={user?.gender} capitalize />
+            <TelegramUsernameRow
+              value={user?.telegram_username}
+              onUpdated={() => refreshUser()}
+            />
           </div>
         </div>
       </main>

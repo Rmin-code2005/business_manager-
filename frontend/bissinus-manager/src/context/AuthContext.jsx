@@ -36,8 +36,13 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
+  // Re-fetch the user profile from /api/me/ — useful after editing profile fields
+  const refreshUser = useCallback(() => {
+    return getMe().then(setUser)
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ user, loading, onLogin, onLogout }}>
+    <AuthContext.Provider value={{ user, loading, onLogin, onLogout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )

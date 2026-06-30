@@ -121,10 +121,22 @@ export function logout() {
 
 /**
  * GET /api/me/
- * Returns UserDetail: { phone, email, first_name, last_name, gender }
+ * Returns UserDetail: { phone, email, first_name, last_name, gender, telegram_username }
  */
 export async function getMe() {
   return authRequest('/api/me/')
+}
+
+/**
+ * PATCH /api/update-telegram-username/
+ * Body: { telegram_username: "@armin_ghajari" }
+ */
+export async function updateTelegramUsername(telegramUsername) {
+  return authRequest('/api/update-telegram-username/', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ telegram_username: telegramUsername }),
+  })
 }
 
 // ─── Prices endpoints ─────────────────────────────────────────────────────────
