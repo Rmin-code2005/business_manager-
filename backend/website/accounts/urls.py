@@ -6,7 +6,8 @@ from rest_framework_simplejwt.views import (
 from .views import UserDetailView
 from .views import (
     LoginView,
-    RegisterView
+    RegisterView,
+    UserTelegramUsernameUpdateView
 )
 urlpatterns = [
     path(
@@ -32,5 +33,10 @@ urlpatterns = [
         "register/",
         RegisterView.as_view(),
         name="register",
+    ),
+    path(
+        "update-telegram-username/",
+        UserTelegramUsernameUpdateView.as_view(),
+        name="update-telegram-username",
     ),
 ]

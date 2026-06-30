@@ -33,7 +33,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
             'email',
             'first_name',
             'last_name',
-            'gender'
+            'gender',
+            'telegram_username',
         )
         
 
@@ -63,3 +64,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
         return user
+    
+class UserTelegramUsernameUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['telegram_username']

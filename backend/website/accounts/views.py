@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LogoutSerializer , LoginSerializer , UserDetailSerializer , RegisterSerializer
-from rest_framework.generics import RetrieveAPIView , CreateAPIView
+from .serializers import LogoutSerializer , LoginSerializer , UserDetailSerializer , RegisterSerializer , UserTelegramUsernameUpdateSerializer
+from rest_framework.generics import RetrieveAPIView , CreateAPIView , UpdateAPIView
 from django.shortcuts import get_object_or_404
 from .models import CustomUser
 from rest_framework.permissions import IsAuthenticated
@@ -39,3 +39,10 @@ class UserDetailView(RetrieveAPIView):
 class RegisterView(CreateAPIView):
 
     serializer_class = RegisterSerializer
+    
+class UserTelegramUsernameUpdateView(UpdateAPIView):
+    serializer_class = UserTelegramUsernameUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

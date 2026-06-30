@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from .managers import CustomUserManager
-from .validators import validate_iran_phone
+from .validators import validate_iran_phone , validate_telegram_username
 
 
 class CustomUser(AbstractUser):
@@ -13,7 +13,13 @@ class CustomUser(AbstractUser):
         OTHER = "other", "Other"
 
     username = None
-
+    telegram_username = models.CharField(
+        max_length=32,
+        unique=True,
+        null=True,
+        blank=True,
+        validators=[validate_telegram_username],
+    )
     email = models.EmailField(
         unique=True,
         blank=False,

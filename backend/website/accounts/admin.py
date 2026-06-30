@@ -16,6 +16,7 @@ class UserAdmin(admin.ModelAdmin):
         "first_name",
         "last_name",
         "phone",
+        "telegram_username",
         "active",
     )
 
@@ -29,6 +30,7 @@ class UserAdmin(admin.ModelAdmin):
         "phone",
         "first_name",
         "last_name",
+        "telegram_username",
     )
 
     ordering = (
