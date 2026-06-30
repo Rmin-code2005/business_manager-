@@ -23,8 +23,9 @@ function formatNum(val) {
  *   color      string          'blue' | 'green' | 'yellow'
  *   fetchFn    async (symbol) => detail
  *   onClose    fn
+ *   onAdjust   fn()            opens the adjust modal for this symbol
  */
-export default function BasketDetail({ symbol, type, color, fetchFn, onClose }) {
+export default function BasketDetail({ symbol, type, color, fetchFn, onClose, onAdjust }) {
   const [data, setData]     = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError]   = useState(null)
@@ -72,12 +73,19 @@ export default function BasketDetail({ symbol, type, color, fetchFn, onClose }) 
           ) : error ? (
             <div className={styles.error}>⚠️ {error}</div>
           ) : (
-            <div className={styles.fields}>
-              <DetailRow label="Name"            value={data?.name} />
-              <DetailRow label="Count"           value={formatNum(data?.count)} />
-              <DetailRow label="Start Price (T)" value={formatNum(data?.start_price_T)} suffix="Toman" color={color} />
-              <DetailRow label="Start Price ($)" value={formatNum(data?.start_price_D)} suffix="USD" color={color} />
-            </div>
+            <>
+              <div className={styles.fields}>
+                <DetailRow label="Name"            value={data?.name} />
+                <DetailRow label="Count"           value={formatNum(data?.count)} />
+                <DetailRow label="Start Price (T)" value={formatNum(data?.start_price_T)} suffix="Toman" color={color} />
+                <DetailRow label="Start Price ($)" value={formatNum(data?.start_price_D)} suffix="USD" color={color} />
+              </div>
+              {onAdjust && (
+                <button className={`${styles.adjustBtn} ${styles[`adjustBtn_${color}`]}`} onClick={onAdjust}>
+                  Adjust amount
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>

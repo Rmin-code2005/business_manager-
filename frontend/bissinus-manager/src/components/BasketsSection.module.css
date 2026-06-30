@@ -82,6 +82,47 @@
   text-align: center;
 }
 
+.addBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1.5px solid transparent;
+  background: var(--surface-2);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.addBtn:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
+}
+
+.addBtn:active {
+  transform: scale(0.95);
+}
+
+.addBtn_blue {
+  color: var(--accent);
+  border-color: rgba(79,142,255,0.25);
+  background: var(--accent-dim);
+}
+
+.addBtn_yellow {
+  color: var(--warning);
+  border-color: rgba(251,191,36,0.25);
+  background: rgba(251,191,36,0.12);
+}
+
+.addBtn_green {
+  color: var(--success);
+  border-color: rgba(52,211,153,0.25);
+  background: rgba(52,211,153,0.1);
+}
+
 /* ── Card body ── */
 .cardBody {
   padding: 14px 16px;

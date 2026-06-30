@@ -395,6 +395,58 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
+  /api/user/basket/decrease/:
+    post:
+      operationId: user_basket_decrease_create
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeBasketValue'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangeBasketValue'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangeBasketValue'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeBasketValue'
+          description: ''
+  /api/user/basket/increase/:
+    post:
+      operationId: user_basket_increase_create
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeBasketValue'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangeBasketValue'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangeBasketValue'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeBasketValue'
+          description: ''
   /api/user/crypto-basket/:
     get:
       operationId: user_crypto_basket_list
@@ -466,58 +518,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CurrencyBasket'
-          description: ''
-  /api/user/currency-basket/decrease/:
-    post:
-      operationId: user_currency_basket_decrease_create
-      tags:
-      - user
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChangeBasketValue'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ChangeBasketValue'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ChangeBasketValue'
-        required: true
-      security:
-      - jwtAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ChangeBasketValue'
-          description: ''
-  /api/user/currency-basket/increase/:
-    post:
-      operationId: user_currency_basket_increase_create
-      tags:
-      - user
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChangeBasketValue'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ChangeBasketValue'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ChangeBasketValue'
-        required: true
-      security:
-      - jwtAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ChangeBasketValue'
           description: ''
   /api/user/gold-basket/:
     get:

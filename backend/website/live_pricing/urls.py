@@ -108,14 +108,6 @@ urlpatterns = [
         SpeceficCryptoBasketView.as_view(),
         name = 'specefic-crypto-basket'
     ),
-    path(
-        "user/currency-basket/increase/",
-        IncreaseBasket.as_view(),
-        name = 'increase-currency-basket'
-    ),
-    path(
-        "user/currency-basket/decrease/",
-        DecreaseBasket.as_view(),
-        name = 'decrease-currency-basket'
-    )
+    path('user/basket/increase/', IncreaseBasket.as_view(), name='basket-increase'),
+    path('user/basket/decrease/', DecreaseBasket.as_view(), name='basket-decrease'),
 ]

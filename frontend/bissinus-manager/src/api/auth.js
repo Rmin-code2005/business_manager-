@@ -30,6 +30,14 @@ async function request(path, options = {}) {
   const data = await res.json()
 
   if (!res.ok) {
+    // DEBUG: log full request/response details to find the real source of errors
+    console.error('[API ERROR]', {
+      url: `${BASE}${path}`,
+      method: options.method || 'GET',
+      sentBody: options.body,
+      status: res.status,
+      response: data,
+    })
     // Build a readable error message from DRF response
     const msg = extractError(data) || `HTTP ${res.status}`
     const err = new Error(msg)
@@ -159,4 +167,26 @@ export async function getCurrencyBasketDetail(symbol) {
 
 export async function getGoldBasketDetail(symbol) {
   return authRequest(`/api/user/gold-basket/${symbol}`)
+}
+
+// ─── Increase / Decrease basket value (RAW — exact backend code, no mapping) ──
+// typeCode must be exactly one of: 'cr' (crypto), 'ca' (currency/cash), 'g' (gold)
+// This is the source of truth — callers must pass the correct short code directly.
+
+export async function increaseBasketRaw(typeCode, symbol, value) {
+  console.log('[increaseBasketRaw] sending →', { type: typeCode, symbol, value })
+  return authRequest('/api/user/basket/increase/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: typeCode, symbol, value }),
+  })
+}
+
+export async function decreaseBasketRaw(typeCode, symbol, value) {
+  console.log('[decreaseBasketRaw] sending →', { type: typeCode, symbol, value })
+  return authRequest('/api/user/basket/decrease/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: typeCode, symbol, value }),
+  })
 }

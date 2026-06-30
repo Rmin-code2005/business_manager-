@@ -3,8 +3,12 @@ from asgiref.sync import async_to_sync
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
-# فرض شده که این سرویس‌ها متد واکشی قیمت دارایی‌ها هستند
-from live_pricing.services import get_price_by_symbol 
+# سه تا تابع جدا برای سه نوع دارایی: ارز، طلا، کریپتو
+from live_pricing.services import (
+    get_price_by_symbol,
+    get_gold_by_symbol,
+    get_crypto_by_symbol,
+)
 
 from .models import CashBasket, GoldBasket, CryptoBasket, Price
 
@@ -16,8 +20,22 @@ def record_price_change(instance, delta_count):
     if delta_count == 0:
         return
 
-    # گرفتن قیمت لحظه‌ای دارایی و دلار از سرویس زنده
-    asset_price_data = async_to_sync(get_price_by_symbol)(instance.name)
+    # انتخاب تابع درست بر اساس نوع بسکت (قبلاً همیشه از تابع Currency
+    # استفاده می‌شد که باعث می‌شد کریپتو و طلا با خطای
+    # "Currency 'XXX' not found" مواجه بشن)
+    if isinstance(instance, CashBasket):
+        price_fn = get_price_by_symbol
+    elif isinstance(instance, GoldBasket):
+        price_fn = get_gold_by_symbol
+    elif isinstance(instance, CryptoBasket):
+        price_fn = get_crypto_by_symbol
+    else:
+        raise ValueError(f"Unknown basket type: {type(instance)}")
+
+    # گرفتن قیمت لحظه‌ای دارایی با تابع مخصوص همون نوع دارایی
+    asset_price_data = async_to_sync(price_fn)(instance.name)
+
+    # قیمت دلار همیشه باید از سرویس ارز گرفته شود (USD یک ارز است)
     usd_price_data = async_to_sync(get_price_by_symbol)("USD")
 
     asset_unit_price = Decimal(str(asset_price_data["price"]))
@@ -69,10 +87,6 @@ def remember_old_state(sender, instance, **kwargs):
 
 
 # -----------------------------
-# Post Save (ثبت تراکنش قیمت‌ها)
-# -----------------------------
-
-# -----------------------------
 # Post Save (ثبت تراکنش قیمت‌ها و حذف خودکار بسکت‌های خالی)
 # -----------------------------
 
@@ -94,7 +108,7 @@ def price_signal(sender, instance, created, **kwargs):
         instance.prices.all().delete()
         return
 
-    # ۳. ریسیت و بازگردانی بسکت
+    # ۳. ریستور و بازگردانی بسکت
     if not instance.is_deleted and instance._old_is_deleted:
         for p in instance.prices.all():
             p.restore()
@@ -111,7 +125,7 @@ def price_signal(sender, instance, created, **kwargs):
         if instance._old_count > 0:
             delta = Decimal("0") - instance._old_count
             record_price_change(instance, delta)
-        
+
         # حذف (سافت دیلیت) خودکار بسکت
         instance.delete()
         return
