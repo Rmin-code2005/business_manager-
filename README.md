@@ -1,12 +1,8 @@
 # Business Manager
 
 ## 📋 Table of Contents
-- [English](#english)
-- [فارسی](#فارسی)
 
 ---
-
-## English
 
 ### 🎯 Overview
 
