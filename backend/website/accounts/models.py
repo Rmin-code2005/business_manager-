@@ -20,6 +20,11 @@ class CustomUser(AbstractUser):
         blank=True,
         validators=[validate_telegram_username],
     )
+    telegram_id = models.BigIntegerField(
+        unique=True,
+        null=True,
+        blank=True,
+    )
     email = models.EmailField(
         unique=True,
         blank=False,

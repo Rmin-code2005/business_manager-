@@ -3,12 +3,13 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .views import UserDetailView
 from .views import (
     LoginView,
     RegisterView,
     UserTelegramUsernameUpdateView,
-    is_member
+    UserChangeInfoView,
+    UserDetailView,
+    UserChangeInfoView
 )
 urlpatterns = [
     path(
@@ -41,8 +42,8 @@ urlpatterns = [
         name="update-telegram-username",
     ),
     path(
-        "user/telegram/is-member/<str:username>",
-        is_member,
-        name = 'is-telegram-member'
+        "me/change-info/",
+        UserChangeInfoView.as_view(),
+        name="user-change-info"
     )
 ]

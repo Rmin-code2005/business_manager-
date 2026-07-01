@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LogoutSerializer , LoginSerializer , UserDetailSerializer , RegisterSerializer , UserTelegramUsernameUpdateSerializer
+from .serializers import LogoutSerializer , LoginSerializer , UserDetailSerializer , RegisterSerializer , UserTelegramUsernameUpdateSerializer,UserChangeInfoSerializer
 from rest_framework.generics import RetrieveAPIView , CreateAPIView , UpdateAPIView
 from django.shortcuts import get_object_or_404
 from .models import CustomUser
@@ -47,11 +47,9 @@ class UserTelegramUsernameUpdateView(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
-    
-@api_view(["GET"])
-def is_member(request, username):
-    return Response({
-        "is_member": CustomUser.objects.filter(
-            telegram_username=username
-        ).exists()
-    })
+class UserChangeInfoView(UpdateAPIView):
+    serializer_class = UserChangeInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
