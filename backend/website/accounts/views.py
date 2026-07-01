@@ -53,3 +53,20 @@ class UserChangeInfoView(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
+    
+@api_view(["POST"])
+def register_telegram(request):
+
+    username = request.data.get("telegram_username")
+    telegram_user_id = request.data.get("telegram_user_id")
+    user = CustomUser.objects.filter(
+    telegram_username=username
+    ).first()
+    if user is None:
+        return Response(
+        {"detail": "User not found"},
+        status=404
+        )
+    user.telegram_id = telegram_user_id
+    user.save(update_fields=["telegram_id"])
+    return Response({"detail": "OK"})

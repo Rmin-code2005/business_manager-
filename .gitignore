@@ -9,6 +9,8 @@ $py.class
 venv
 env
 .venv
+bot_venv
+
 
 # =========================
 # Django

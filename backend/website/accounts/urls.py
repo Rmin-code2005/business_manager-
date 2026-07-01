@@ -9,7 +9,8 @@ from .views import (
     UserTelegramUsernameUpdateView,
     UserChangeInfoView,
     UserDetailView,
-    UserChangeInfoView
+    UserChangeInfoView,
+    register_telegram
 )
 urlpatterns = [
     path(
@@ -45,5 +46,10 @@ urlpatterns = [
         "me/change-info/",
         UserChangeInfoView.as_view(),
         name="user-change-info"
+    ),
+    path(
+        "telegram/register/",
+        register_telegram,
+        name = "telegram-register"
     )
 ]
