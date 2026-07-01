@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext'
 import PricesPanel from '../components/PricesPanel'
 import BasketsSection from '../components/BasketsSection'
 import TelegramUsernameRow from '../components/TelegramUsernameRow'
-import { getCryptoPrices, getCurrencyPrices, getGoldPrices } from '../api/auth'
+import EditableProfileRow from '../components/EditableProfileRow'
+import { getCryptoPrices, getCurrencyPrices, getGoldPrices, updateUserInfo } from '../api/auth'
 import styles from './DashboardPage.module.css'
 
 function IconLogout() {
@@ -126,15 +127,12 @@ export default function DashboardPage() {
             <span className={styles.moduleTitle}>Your Profile</span>
           </div>
           <div className={styles.profileFields}>
-            <ProfileRow label="First name" value={user?.first_name} />
-            <ProfileRow label="Last name"  value={user?.last_name} />
-            <ProfileRow label="Email"      value={user?.email} />
-            <ProfileRow label="Phone"      value={user?.phone} />
-            <ProfileRow label="Gender"     value={user?.gender} capitalize />
-            <TelegramUsernameRow
-              value={user?.telegram_username}
-              onUpdated={() => refreshUser()}
-            />
+            <EditableProfileRow label="First name" field="first_name" value={user?.first_name} type="text"  saveFn={updateUserInfo} onSaved={refreshUser} />
+            <EditableProfileRow label="Last name"  field="last_name"  value={user?.last_name}  type="text"  saveFn={updateUserInfo} onSaved={refreshUser} />
+            <EditableProfileRow label="Email"      field="email"      value={user?.email}      type="email" saveFn={updateUserInfo} onSaved={refreshUser} />
+            <EditableProfileRow label="Phone"      field="phone"      value={user?.phone}      type="tel"   saveFn={updateUserInfo} onSaved={refreshUser} />
+            <ProfileRow label="Gender" value={user?.gender} capitalize />
+            <TelegramUsernameRow value={user?.telegram_username} onUpdated={refreshUser} />
           </div>
         </div>
       </main>

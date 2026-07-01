@@ -11,7 +11,13 @@ class CustomUser(AbstractUser):
         MALE = "male", "Male"
         FEMALE = "female", "Female"
         OTHER = "other", "Other"
-
+    telegram_token = models.CharField(
+        max_length=64,
+        blank=True,
+        null=True,
+        unique=True,
+        db_index=True
+    )
     username = None
     telegram_username = models.CharField(
         max_length=32,

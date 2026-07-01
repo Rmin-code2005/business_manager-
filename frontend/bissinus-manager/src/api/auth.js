@@ -139,6 +139,18 @@ export async function updateTelegramUsername(telegramUsername) {
   })
 }
 
+/**
+ * PATCH /api/me/change-info/
+ * Body: one or more of { first_name, last_name, phone, email }
+ */
+export async function updateUserInfo(fields) {
+  return authRequest('/api/me/change-info/', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(fields),
+  })
+}
+
 // ─── Prices endpoints ─────────────────────────────────────────────────────────
 
 export async function getCryptoPrices() {

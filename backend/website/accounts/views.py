@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from .models import CustomUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
+import secrets
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
     
@@ -67,6 +68,25 @@ def register_telegram(request):
         {"detail": "User not found"},
         status=404
         )
+
+    # user.save(update_fields=["telegram_id"])
+    another_user = CustomUser.objects.filter(
+        telegram_id=telegram_user_id
+    ).exclude(pk=user.pk).exists()
+
+    if another_user:
+        return Response(
+        {"detail": "Telegram account already linked to another user."},
+        status=status.HTTP_409_CONFLICT,
+        )
     user.telegram_id = telegram_user_id
-    user.save(update_fields=["telegram_id"])
-    return Response({"detail": "OK"})
+    user.telegram_token = secrets.token_hex(32)
+
+    user.save(update_fields=["telegram_id", "telegram_token"])
+    return Response(
+        {
+            "detail": "OK",
+            "telegram_token": user.telegram_token,
+        },
+        status=status.HTTP_200_OK,
+    )
