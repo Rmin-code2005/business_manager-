@@ -10,6 +10,7 @@ from .models import CustomUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 import secrets
+
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
     

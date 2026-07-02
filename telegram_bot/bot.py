@@ -1,6 +1,10 @@
+from email.mime import text
 from locale import currency
+from multiprocessing import context
 import os
 import logging
+from turtle import update
+from wsgiref import headers
 import requests
 
 from dotenv import load_dotenv
@@ -43,7 +47,7 @@ keyboard = ReplyKeyboardMarkup(
     [
         [KeyboardButton("📊 Live prices")],
         [
-            KeyboardButton("💵 Dollar basket"),
+            KeyboardButton("💵 Currency basket"),
             KeyboardButton("🥇 Gold basket"),
         ],
         [
@@ -148,7 +152,6 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     token = context.user_data.get("telegram_token")
 
     if token is None:
-
         await update.message.reply_text(
             "ابتدا /start را اجرا کنید."
         )
@@ -157,6 +160,45 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     headers = {
         "X-Telegram-Token": token
     }
+
+    basket_type = context.user_data.get("basket_type")
+
+    if basket_type and text not in [
+        "📊 Live prices",
+        "💵 Currency basket",
+        "🥇 Gold basket",
+        "₿ Crypto basket",
+    ]:
+
+        res = requests.get(
+            f"{BASE_URL}/user/{basket_type}-basket/{text}",
+            headers=headers,
+            timeout=10,
+        )
+        if res.status_code != 200:
+            await update.message.reply_text(
+            "❌ اطلاعات سبد دریافت نشد.",
+            reply_markup=keyboard,
+            )
+            return
+        
+        data = res.json()
+
+        message = (
+            f"📦 {data['name']}\n\n"
+            f"💰 Count : {data['count']}\n"
+            f"🇮🇷 Start Price (T) : {data['start_price_T']}\n"
+            f"🇺🇸 Start Price (D) : {data['start_price_D']}"
+        )
+
+        await update.message.reply_text(
+            message,
+            reply_markup=keyboard,
+        )
+
+        context.user_data.pop("basket_type", None)
+
+        return
 
     try:
 
@@ -194,15 +236,34 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # USD
         # -------------------
 
-        elif text == "💵 Dollar basket":
+        elif text == "💵 Currency basket":
 
             res = requests.get(
-                f"{BASE_URL}/usd-basket/",
+                f"{BASE_URL}/user/currency-basket/",
                 headers=headers,
                 timeout=10,
             )
 
-            await update.message.reply_text(res.text)
+            data = res.json()
+            
+            context.user_data["basket_type"] = "currency"
+
+            buttons = [KeyboardButton(i["name"]) for i in data]
+
+            rows = [
+                buttons[i:i+2]
+                for i in range(0, len(buttons), 2)
+            ]
+
+            await update.message.reply_text(
+                "💵 یکی از سبدهای ارزی را انتخاب کنید:",
+                reply_markup=ReplyKeyboardMarkup(
+                rows,
+                resize_keyboard=True,
+                one_time_keyboard=True,
+                ),
+            )
+        
 
         # -------------------
         # GOLD
